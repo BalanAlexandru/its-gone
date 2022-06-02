@@ -12,6 +12,10 @@ func MakeHeader() string {
 	return styles.Header.Render("Good " + FindDayTime() + ", " + name + "!")
 }
 
+func UpdateHeader(message string) string {
+	return styles.Header.Render(message)
+}
+
 func FindDayTime() string {
 	now := time.Now()
 

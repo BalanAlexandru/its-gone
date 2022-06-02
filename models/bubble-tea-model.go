@@ -1,86 +1,118 @@
 package models
 
 import (
-	"fmt"
+	"strings"
 
-	"github.com/BalanAlexandru/its-gone/styles"
-	"github.com/BalanAlexandru/its-gone/utils"
 	tea "github.com/charmbracelet/bubbletea"
+)
+
+type ViewType int64
+
+const (
+	Home ViewType = iota
+	AddTask
 )
 
 type BubbleTeaModel struct {
 	tea.Model
-	Items    []Task
-	Cursor   int
-	Selected map[int]struct{}
+	TextInput   TextInputModel
+	CurrentView ViewType
+	Items       []Task
+	Cursor      int
+	Selected    map[int]struct{}
 }
 
 var initialModel BubbleTeaModel = BubbleTeaModel{
-	Items:    make([]Task, 0),
-	Selected: make(map[int]struct{}),
+	TextInput:   MakeTextInputModel(),
+	CurrentView: Home,
+	Items:       make([]Task, 0),
+	Selected:    make(map[int]struct{}),
 }
 
 func MakeDemoBubbleTeaModel() BubbleTeaModel {
-	initialModel.Items = append(initialModel.Items, Task{Name: "Buy carrots", State: New})
-	initialModel.Items = append(initialModel.Items, Task{Name: "Wash car", State: New})
-
 	return initialModel
 }
 
 func (model BubbleTeaModel) Init() tea.Cmd {
-	return nil
+	return tea.Batch(
+		model.TextInput.Init(),
+	)
 }
 
 func (model BubbleTeaModel) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
-	switch msg := msg.(type) {
-	case tea.KeyMsg:
-		switch msg.String() {
-		case "ctrl+c", "q":
-			return model, tea.Quit
+	var cmd tea.Cmd
+	var commands []tea.Cmd = make([]tea.Cmd, 5)
 
-		case "up", "k":
-			if model.Cursor > 0 {
-				model.Cursor--
-			}
+	switch model.CurrentView {
+	case Home:
+		switch msg := msg.(type) {
+		case tea.KeyMsg:
+			switch msg.String() {
+			case "ctrl+c", "q":
+				return model, tea.Quit
 
-		case "down", "j":
-			if model.Cursor < len(model.Items)-1 {
-				model.Cursor++
-			}
+			case "up", "k":
+				if model.Cursor > 0 {
+					model.Cursor--
+				}
 
-		case "enter", " ":
-			_, ok := model.Selected[model.Cursor]
-			if ok {
-				delete(model.Selected, model.Cursor)
-			} else {
-				model.Selected[model.Cursor] = struct{}{}
+			case "down", "j":
+				if model.Cursor < len(model.Items)-1 {
+					model.Cursor++
+				}
+
+			case " ":
+				_, ok := model.Selected[model.Cursor]
+				if ok {
+					delete(model.Selected, model.Cursor)
+				} else {
+					model.Selected[model.Cursor] = struct{}{}
+				}
+
+			case tea.KeyCtrlA.String():
+				model.CurrentView = AddTask
 			}
 		}
+
+	case AddTask:
+		switch msg := msg.(type) {
+		case tea.KeyMsg:
+			switch msg.String() {
+			case tea.KeyCtrlC.String():
+				commands = append(commands, tea.Quit)
+
+			case tea.KeyEnter.String():
+				if strings.TrimSpace(model.TextInput.Value()) != "" {
+					newTask := Task{
+						State: New,
+						Name:  model.TextInput.Value(),
+					}
+					model.Items = append(model.Items, newTask)
+					model.TextInput = MakeTextInputModel()
+				}
+
+				model.CurrentView = Home
+				return model, tea.Batch(commands...)
+
+			case tea.KeyCtrlB.String():
+				model.CurrentView = Home
+			}
+		}
+
+		model.TextInput, cmd = model.TextInput.Update(msg)
+		commands = append(commands, cmd)
 	}
 
-	return model, nil
+	return model, tea.Batch(commands...)
 }
 
 func (model BubbleTeaModel) View() string {
-	// Header
-	ui := utils.MakeHeader()
-
-	for i, choice := range model.Items {
-		cursor := " "
-		if model.Cursor == i {
-			cursor = ">"
-		}
-
-		checked := " "
-		if _, ok := model.Selected[i]; ok {
-			checked = "x"
-		}
-
-		ui += styles.VerticalMargin.Render(fmt.Sprintf("%s [%s] %s", cursor, checked, choice.GlossName()))
+	switch model.CurrentView {
+	case Home:
+		return HomeView(model)
+	case AddTask:
+		return AddTaskView(model)
 	}
 
-	// Footer
-	ui += styles.Footer.Render(utils.MakeFooter())
-
-	return styles.AppStyle.Render(ui)
+	return HomeView(model)
 }
