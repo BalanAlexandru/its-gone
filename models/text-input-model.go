@@ -15,6 +15,7 @@ func MakeTextInputModel() TextInputModel {
 	model := TextInputModel{}
 	model.TextInput = textinput.New()
 	model.TextInput.Placeholder = "Type the name of the task..."
+	model.TextInput.PlaceholderStyle = styles.MutedText
 	model.TextInput.Focus()
 
 	return model
@@ -32,7 +33,7 @@ func (model TextInputModel) Update(msg tea.Msg) (TextInputModel, tea.Cmd) {
 }
 
 func (model TextInputModel) View() string {
-	return styles.VerticalMargin.Render(model.TextInput.View())
+	return styles.VerticalMargin.Render(styles.InputBackground.Render(model.TextInput.View()))
 }
 
 func (model TextInputModel) Value() string {

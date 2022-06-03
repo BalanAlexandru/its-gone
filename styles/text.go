@@ -2,11 +2,15 @@ package styles
 
 import gloss "github.com/charmbracelet/lipgloss"
 
-var BoldText = gloss.NewStyle().
-	Bold(true).
-	Foreground(gloss.Color("#EBAF25"))
+var Text = gloss.NewStyle().Foreground(gloss.Color(FOREGROUND))
 
-var InfoText = gloss.NewStyle().
-	Foreground(gloss.Color("#B5AA99"))
+var BoldText = Text.Copy().
+	Bold(true)
+
+var InfoText = Text.Copy().
+	Foreground(gloss.Color(INFO))
+
+var MutedText = Text.Copy().
+	Foreground(gloss.Color(MUTED))
 
 var VerticalMargin = gloss.NewStyle().Margin(1, 0)
