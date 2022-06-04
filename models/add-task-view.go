@@ -13,7 +13,7 @@ func AddTaskView(model BubbleTeaModel) string {
 
 	// Footer
 	utils.AddTaskFooter()
-	ui += styles.Footer.Render(utils.Footer)
+	ui += styles.Footer.Render(utils.MakeFooter())
 
 	return styles.AppStyle.Render(ui)
 }

@@ -71,6 +71,17 @@ func (model BubbleTeaModel) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 
 			case tea.KeyCtrlA.String():
 				model.CurrentView = AddTask
+
+			case "d":
+				if len(model.Selected) != 0 {
+					for k := range model.Selected {
+						if model.Items[k].State == Done {
+							model.Items[k].State = New
+						} else {
+							model.Items[k].State = Done
+						}
+					}
+				}
 			}
 		}
 

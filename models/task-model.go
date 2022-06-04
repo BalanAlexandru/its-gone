@@ -17,5 +17,9 @@ type Task struct {
 }
 
 func (task Task) GlossName() string {
+	if task.State == Done {
+		return styles.DoneText.Render(task.Name)
+	}
+
 	return styles.BoldText.Render(task.Name)
 }
