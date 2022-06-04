@@ -39,7 +39,3 @@ func (model TextInputModel) View() string {
 func (model TextInputModel) Value() string {
 	return model.TextInput.Value()
 }
-
-func (model TextInputModel) Clear() {
-	model.TextInput.Reset()
-}
