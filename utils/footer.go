@@ -4,9 +4,7 @@ import "github.com/BalanAlexandru/its-gone/styles"
 
 type FooterOption string
 
-const MARK_DONE_OPTION FooterOption = "Toggle done/undone [d]"
-
-const home_footer string = "Quit [q, ctrl+c] || Add task [ctrl+a] || Select task [space]"
+const home_footer string = "Quit [q, ctrl+c] || Add task [ctrl+a] || Toggle done status [d] || Select task [space]"
 const add_task_footer string = "Quit [ctrl+c] || Go back [ctrl+b] || Save new task [enter]"
 
 var footer string = home_footer

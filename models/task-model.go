@@ -23,3 +23,11 @@ func (task Task) GlossName() string {
 
 	return styles.BoldText.Render(task.Name)
 }
+
+func (task *Task) ToggleCompletion() {
+	if task.State == Done {
+		task.State = New
+	} else {
+		task.State = Done
+	}
+}

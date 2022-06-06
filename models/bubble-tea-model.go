@@ -27,6 +27,7 @@ var initialModel BubbleTeaModel = BubbleTeaModel{
 	CurrentView: Home,
 	Items:       make([]Task, 0),
 	Selected:    make(map[int]struct{}),
+	Cursor:      0,
 }
 
 func MakeDemoBubbleTeaModel() BubbleTeaModel {
@@ -75,12 +76,11 @@ func (model BubbleTeaModel) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 			case "d":
 				if len(model.Selected) != 0 {
 					for k := range model.Selected {
-						if model.Items[k].State == Done {
-							model.Items[k].State = New
-						} else {
-							model.Items[k].State = Done
-						}
+						model.Items[k].ToggleCompletion()
 					}
+					model.Selected = make(map[int]struct{}, 0)
+				} else {
+					model.Items[model.Cursor].ToggleCompletion()
 				}
 			}
 		}
