@@ -1,8 +1,10 @@
 package models
 
 import (
+	"log"
 	"strings"
 
+	"github.com/BalanAlexandru/its-gone/utils/errors"
 	tea "github.com/charmbracelet/bubbletea"
 )
 
@@ -82,6 +84,16 @@ func (model BubbleTeaModel) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 				} else {
 					model.Items[model.Cursor].ToggleCompletion()
 				}
+
+			case tea.KeyCtrlX.String():
+				if len(model.Selected) != 0 {
+					for k := range model.Selected {
+						deleteTask(&model, k)
+					}
+					model.Selected = make(map[int]struct{}, 0)
+				} else {
+					deleteTask(&model, model.Cursor)
+				}
 			}
 		}
 
@@ -126,4 +138,17 @@ func (model BubbleTeaModel) View() string {
 	}
 
 	return HomeView(model)
+}
+
+func deleteTask(model *BubbleTeaModel, index int) {
+	if index < 0 || index >= len(model.Items) {
+		log.Println(errors.IndexOutOfBounds{
+			Error: errors.Error{
+				ErrorLevel: errors.DANGER,
+				Message:    "The index was out of bounds when trying to delete the task",
+			},
+		})
+	}
+
+	model.Items = append(model.Items[:index], model.Items[index+1:]...)
 }

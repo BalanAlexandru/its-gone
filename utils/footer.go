@@ -9,6 +9,8 @@ const add_task_footer string = "Quit [ctrl+c] || Go back [ctrl+b] || Save new ta
 
 var footer string = home_footer
 
+const DELETE_TASK_OPTION FooterOption = "Delete task [ctrl+x]"
+
 func MakeFooter(options ...FooterOption) string {
 	for _, option := range options {
 		footer += " || " + string(option)

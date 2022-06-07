@@ -30,6 +30,10 @@ func HomeView(model BubbleTeaModel) string {
 
 	var options []utils.FooterOption = make([]utils.FooterOption, 0)
 
+	if len(model.Items) > 0 {
+		options = append(options, utils.DELETE_TASK_OPTION)
+	}
+
 	ui += styles.Footer.Render(utils.MakeFooter(options...))
 
 	return styles.AppStyle.Render(ui)
